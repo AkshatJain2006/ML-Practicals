@@ -1,0 +1,47 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+data = {
+    "StudyHours": [2, 5, 7, 1, 6],
+    "Attendance": [65, 80, 90, 55, 85],
+    "AssignmentScore": [55, 72, 85, 45, 78],
+    "Age": [19, 20, 19, 18, 21],
+    "InternetAccess": ["No", "Yes", "Yes", "No", "Yes"],
+    "Result": ["Fail", "Pass", "Pass", "Fail", "Pass"]
+}
+
+df = pd.DataFrame(data)
+
+df["InternetAccess"] = df["InternetAccess"].map({"No": 0, "Yes": 1})
+
+X = df[["StudyHours", "Attendance", "AssignmentScore",
+        "Age", "InternetAccess"]]
+y = df["Result"]
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+model = SVC(kernel="linear")
+model.fit(X_scaled, y)
+
+new_student = pd.DataFrame([{
+    "StudyHours": 4,
+    "Attendance": 75,
+    "AssignmentScore": 70,
+    "Age": 20,
+    "InternetAccess": 1
+}])
+
+new_scaled = scaler.transform(new_student)
+prediction = model.predict(new_scaled)
+
+print("Student Result:", prediction[0])
+
+plt.scatter(df["StudyHours"], df["Result"].map({"Fail": 0, "Pass": 1}))
+plt.xlabel("Study Hours")
+plt.ylabel("Result (0=Fail, 1=Pass)")
+plt.title("Study Hours vs Student Result")
+plt.show()
